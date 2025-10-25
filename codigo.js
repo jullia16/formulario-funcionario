@@ -33,6 +33,7 @@ let indexEdicao = -1;
 
 const form = document.getElementById('formFuncionario');
 const tabela = document.querySelector('#tabelaFuncionarios tbody');
+const divRelatorios = document.getElementById('relatorios');
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -43,8 +44,7 @@ form.addEventListener('submit', (event) => {
   const salario = document.getElementById('salario').value;
 
   if (indexEdicao === -1) {
-    const funcionario = new Funcionario(nome, idade, cargo, salario);
-    funcionarios.push(funcionario);
+    funcionarios.push(new Funcionario(nome, idade, cargo, salario));
     alert("Funcionário cadastrado!");
   } else {
     funcionarios[indexEdicao].atualizarDados(nome, idade, cargo, salario);
@@ -58,7 +58,6 @@ form.addEventListener('submit', (event) => {
 
 const renderTabela = () => {
   tabela.innerHTML = '';
-
   funcionarios.forEach((func, index) => {
     const row = tabela.insertRow();
 
@@ -92,3 +91,30 @@ const renderTabela = () => {
     cellAcoes.appendChild(btnExcluir);
   });
 };
+
+document.getElementById('btnSalarioMaior5000').addEventListener('click', () => {
+  const filtrados = funcionarios.filter(f => f.salario > 5000);
+  exibirRelatorio("Funcionários com salário maior que R$5000:", filtrados.map(f => f.toString()));
+});
+
+document.getElementById('btnMediaSalarial').addEventListener('click', () => {
+  if (funcionarios.length === 0) return exibirRelatorio("Média salarial:", ["Nenhum funcionário cadastrado"]);
+  const media = funcionarios.reduce((soma, f) => soma + f.salario, 0) / funcionarios.length;
+  exibirRelatorio("Média salarial:", [`R$ ${media.toFixed(2)}`]);
+});
+
+document.getElementById('btnCargosUnicos').addEventListener('click', () => {
+  const cargos = funcionarios.map(f => f.cargo);
+  const unicos = [...new Set(cargos)];
+  exibirRelatorio("Cargos únicos:", unicos);
+});
+
+document.getElementById('btnNomesMaiusculo').addEventListener('click', () => {
+  const nomesMaiusculo = funcionarios.map(f => f.nome.toUpperCase());
+  exibirRelatorio("Nomes em maiúsculo:", nomesMaiusculo);
+});
+
+function exibirRelatorio(titulo, linhas) {
+  divRelatorios.innerHTML = `<h4>${titulo}</h4>` + 
+    (linhas.length > 0 ? `<ul>${linhas.map(l => `<li>${l}</li>`).join('')}</ul>` : "<p>Nenhum resultado encontrado.</p>");
+}
