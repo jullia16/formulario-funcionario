@@ -43,12 +43,10 @@ form.addEventListener('submit', (event) => {
   const salario = document.getElementById('salario').value;
 
   if (indexEdicao === -1) {
-
     const funcionario = new Funcionario(nome, idade, cargo, salario);
     funcionarios.push(funcionario);
     alert("Funcionário cadastrado!");
   } else {
-
     funcionarios[indexEdicao].atualizarDados(nome, idade, cargo, salario);
     alert("Funcionário atualizado!");
     indexEdicao = -1;
@@ -58,3 +56,39 @@ form.addEventListener('submit', (event) => {
   renderTabela();
 });
 
+const renderTabela = () => {
+  tabela.innerHTML = '';
+
+  funcionarios.forEach((func, index) => {
+    const row = tabela.insertRow();
+
+    row.insertCell(0).textContent = func.nome;
+    row.insertCell(1).textContent = func.idade;
+    row.insertCell(2).textContent = func.cargo;
+    row.insertCell(3).textContent = func.salario.toFixed(2);
+
+    const cellAcoes = row.insertCell(4);
+
+    const btnEditar = document.createElement('button');
+    btnEditar.textContent = 'Editar';
+    btnEditar.onclick = function() {
+      document.getElementById('nome').value = func.nome;
+      document.getElementById('idade').value = func.idade;
+      document.getElementById('cargo').value = func.cargo;
+      document.getElementById('salario').value = func.salario;
+      indexEdicao = index;
+    };
+
+    const btnExcluir = document.createElement('button');
+    btnExcluir.textContent = 'Excluir';
+    btnExcluir.onclick = function() {
+      if (confirm(`Deseja excluir ${func.nome}?`)) {
+        funcionarios.splice(index, 1);
+        renderTabela();
+      }
+    };
+
+    cellAcoes.appendChild(btnEditar);
+    cellAcoes.appendChild(btnExcluir);
+  });
+};
